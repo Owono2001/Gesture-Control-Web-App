@@ -1,0 +1,38 @@
+# .dockerignore
+
+# Python virtual environment
+.venv
+venv/
+*/venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# IDE / Editor specific
+.idea/
+.vscode/
+
+# Git files (if using git)
+.git/
+.gitignore
+
+# Old main script (if not needed)
+main.py
+
+# Test scripts (if not needed in production)
+test_install.py
+
+# Any other local config or large files not needed in the container
+*.log
+*.bkp

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ window_title or 'Gesture Control' }}</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+    <script src="https://kit.fontawesome.com/f04ac6dd14.js" crossorigin="anonymous"></script>
+    </head>
+<body>
+    <h1>{{ window_title or 'Gesture Control' }}</h1>
+
+    <div id="container">
+
+        <div id="video-container">
+            <img id="video-feed" src="" alt="Video Feed Loading..." />
+        </div>
+
+        <div id="dashboard">
+            <h2>Dashboard</h2>
+
+            <div id="status-section" class="dashboard-section">
+                <h3>System Status</h3>
+                <p>
+                    <span id="status-text">
+                        <span id="status-icon" class="icon"></span>
+                        Connecting...
+                    </span>
+                </p>
+            </div>
+
+            <div id="feedback-section" class="dashboard-section">
+                <h3>Last Event</h3>
+                <p>
+                    <span id="feedback-text" class="">&nbsp;</span> </p>
+            </div>
+
+            <div id="gestures-section" class="dashboard-section">
+                <h3>Detected Gestures</h3>
+                <div id="gesture-list-container">
+                    <ul id="gesture-list">
+                        <li>Waiting for data...</li>
+                    </ul>
+                </div>
+            </div>
+
+             <div id="controls-section" class="dashboard-section">
+                 <h3>Manual Control</h3>
+                 <button id="toggle-active-btn">Toggle Active State</button>
+            </div>
+
+             <div id="available-gestures" class="dashboard-section">
+                <h3>Available Gestures</h3>
+                 <ul>
+                     <li><i class="fas fa-certificate fa-fw"></i> <code>OK Sign</code>: Activate System</li>
+                     <li><i class="fas fa-hand-paper fa-fw"></i> <code>Open Palm</code>: Play/Pause Media (when active)</li>
+                     <li><i class="fas fa-hand-rock fa-fw"></i> <code>Fist</code>: Play/Pause Media (when active)</li>
+                     <li><i class="fas fa-thumbs-up fa-fw"></i> <code>Thumbs Up</code>: Volume Up (when active)</li>
+                     <li><i class="fas fa-thumbs-down fa-fw"></i> <code>Thumbs Down</code>: Volume Down (when active)</li>
+                 </ul>
+            </div>
+
+        </div></div> <script>
+        const socket = io(); // Connect to Socket.IO server
+
+        // Get references to HTML elements
+        const videoFeed = document.getElementById('video-feed');
+        const statusTextSpan = document.getElementById('status-text'); // The span containing icon+text
+        const statusIcon = document.getElementById('status-icon');
+        const feedbackText = document.getElementById('feedback-text');
+        const gestureList = document.getElementById('gesture-list');
+        const toggleBtn = document.getElementById('toggle-active-btn');
+
+        let currentIsActive = false; // Track current state locally for button logic
+
+        // --- Socket Event Handlers ---
+
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            updateStatusDisplay(null, false, 'Waiting for Server...'); // Update display
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+            updateStatusDisplay(null, false, 'DISCONNECTED'); // Update display
+            feedbackText.textContent = 'Connection lost. Please restart server.';
+            feedbackText.className = 'visible feedback-status'; // Make visible
+            gestureList.innerHTML = '<li>Server disconnected</li>';
+        });
+
+        socket.on('server_error', (data) => {
+            console.error('Server Error:', data.message);
+            updateStatusDisplay(null, false, 'SERVER ERROR'); // Update display
+            feedbackText.textContent = data.message || 'An unspecified server error occurred.';
+            feedbackText.className = 'visible feedback-status'; // Make visible
+        });
+
+        socket.on('video_frame', (data) => {
+            // Update the video feed image source
+            if (data?.frame) {
+                videoFeed.src = 'data:image/jpeg;base64,' + data.frame;
+            }
+        });
+
+        socket.on('update_status', (data) => {
+             // console.log('Status update:', data); // Enable for debugging if needed
+             currentIsActive = data.is_active; // Update local state tracker
+
+             // Update the display elements based on received data
+             updateStatusDisplay(data.activation_gesture_name, currentIsActive);
+             updateFeedbackDisplay(data.feedback);
+             updateGestureList(data.detected_gestures);
+        });
+
+        // --- UI Update Functions ---
+
+        function updateStatusDisplay(activationGestureName, isActive, statusOverride = null) {
+            const defaultActivation = 'Activation Gesture';
+            const activationGesture = activationGestureName || defaultActivation;
+            let textContent = '';
+            let iconClass = 'fas fa-question-circle'; // Default icon
+            let textClass = ''; // CSS class for the span
+
+            if (statusOverride) {
+                textContent = statusOverride;
+                 if (statusOverride === 'DISCONNECTED') { iconClass = 'fas fa-unlink'; textClass = 'status-disconnected'; }
+                 else if (statusOverride === 'SERVER ERROR') { iconClass = 'fas fa-exclamation-triangle'; textClass = 'status-inactive'; }
+                 else { iconClass = 'fas fa-spinner fa-spin'; textClass = 'status-connecting'; } // Connecting or Waiting
+                 toggleBtn.textContent = 'Toggle Status'; // Generic button text
+                 toggleBtn.className = '';
+            } else {
+                textContent = isActive ? 'ACTIVE' : `INACTIVE (Show ${activationGesture})`;
+                textClass = isActive ? 'status-active' : 'status-inactive';
+                iconClass = isActive ? 'fas fa-check-circle' : 'fas fa-times-circle';
+                // Update button based on actual state
+                toggleBtn.textContent = isActive ? 'Deactivate Now' : 'Activate Now';
+                toggleBtn.className = isActive ? 'active-state' : 'inactive-state';
+            }
+            // Update the DOM
+            statusIcon.className = `icon ${iconClass}`; // Set icon class
+            // Set text content - find the text node within the span if needed, or just set span's text
+            statusTextSpan.textContent = ''; // Clear previous content
+            statusTextSpan.appendChild(statusIcon.cloneNode(true)); // Add icon clone
+            statusTextSpan.appendChild(document.createTextNode(` ${textContent}`)); // Add text node
+            statusTextSpan.className = textClass; // Apply status class
+        }
+
+        function updateFeedbackDisplay(feedbackInfo) {
+            const message = feedbackInfo?.message;
+            if (message) {
+                let iconClass = 'fas fa-info-circle'; // Default feedback icon
+                let textClass = 'feedback-info';
+
+                if (message.includes("Activated")) { iconClass = 'fas fa-toggle-on'; textClass = 'feedback-status'; }
+                else if (message.includes("Deactivated")) { iconClass = 'fas fa-toggle-off'; textClass = 'feedback-status'; }
+                else if (message.includes("Action:")) {
+                     textClass = 'feedback-action';
+                     // Choose icon based on action text
+                     const lowerMsg = message.toLowerCase();
+                     if (lowerMsg.includes("volume up")) iconClass = 'fas fa-volume-up';
+                     else if (lowerMsg.includes("volume down")) iconClass = 'fas fa-volume-down';
+                     else if (lowerMsg.includes("play") || lowerMsg.includes("pause")) iconClass = 'fas fa-play-pause'; // Combined icon
+                     else iconClass = 'fas fa-hand-point-up'; // Generic action
+                }
+
+                feedbackText.innerHTML = `<i class="icon ${iconClass}"></i> ${message}`;
+                feedbackText.className = 'visible ' + textClass;
+            } else {
+                feedbackText.innerHTML = '&nbsp;'; // Non-breaking space when empty
+                feedbackText.className = ''; // Hide
+            }
+        }
+
+        function updateGestureList(gestures) {
+             gestures = gestures || {}; // Ensure it's an object
+             gestureList.innerHTML = ''; // Clear previous list
+             if (Object.keys(gestures).length > 0) {
+                 for (const hand in gestures) {
+                     const li = document.createElement('li');
+                     li.innerHTML = `${hand}: <span>${gestures[hand]}</span>`;
+                     gestureList.appendChild(li);
+                 }
+             } else {
+                  // Only show "No hands" if connected
+                  if(socket.connected) {
+                     gestureList.innerHTML = '<li>No hands detected</li>';
+                  } else {
+                     gestureList.innerHTML = '<li>Waiting for data...</li>';
+                  }
+             }
+        }
+
+        // --- Button Event Listener ---
+        toggleBtn.addEventListener('click', () => {
+            const desiredState = !currentIsActive; // Determine the state we want to switch to
+            console.log(`Button clicked: Requesting active state = ${desiredState}`);
+            socket.emit('set_active_state', { active: desiredState }); // Send desired state to server
+        });
+
+    </script>
+</body>
+</html>

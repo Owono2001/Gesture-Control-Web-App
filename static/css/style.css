@@ -1,0 +1,307 @@
+/* static/css/style.css (Enhanced Version - Matches final index.html) */
+
+/* --- Google Font --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+/* --- Variables for easier theming --- */
+:root {
+    --bg-gradient-start: #4e54c8; /* Darker Purple/Indigo */
+    --bg-gradient-end: #8f94fb;   /* Lighter Indigo/Blue */
+    --dashboard-bg: rgba(10, 25, 47, 0.7); /* Dark blueish transparent */
+    --dashboard-blur: 10px;
+    --text-light: #f0f0f5; /* Off-white */
+    --text-dark: #333;
+    --accent-color: #8f94fb; /* Lighter indigo as accent */
+    --success-color: #28a745; /* Green */
+    --success-border: #1e7e34;
+    --danger-color: #dc3545; /* Red */
+    --danger-border: #b21f2d;
+    --info-color: #17a2b8; /* Teal */
+    --warning-color: #ffc107; /* Yellow */
+    --connecting-color: #fd7e14; /* Orange */
+    --disconnected-color: #6c757d; /* Grey */
+    --border-light: rgba(255, 255, 255, 0.2);
+    --shadow-color-heavy: rgba(0, 0, 0, 0.3);
+    --shadow-color-light: rgba(0, 0, 0, 0.15);
+    --font-family: 'Poppins', sans-serif;
+}
+
+/* --- General Styles --- */
+body {
+    font-family: var(--font-family);
+    margin: 0;
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+    background-attachment: fixed;
+    color: var(--text-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 25px;
+    box-sizing: border-box;
+    line-height: 1.6;
+}
+
+h1 {
+    margin-top: 0;
+    margin-bottom: 40px;
+    color: #ffffff;
+    text-align: center;
+    font-weight: 300;
+    font-size: 2.8em;
+    letter-spacing: 1.5px;
+    text-shadow: 2px 2px 8px var(--shadow-color-heavy);
+}
+
+/* --- Layout Container --- */
+#container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1500px;
+}
+
+/* --- Video Feed --- */
+#video-container {
+    border: 1px solid var(--border-light);
+    background-color: #111; /* Even darker background */
+    flex: 3;
+    min-width: 320px;
+    max-width: 900px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px var(--shadow-color-heavy);
+    overflow: hidden;
+    position: relative;
+}
+
+#video-feed {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background-color: #000; /* Black background while loading */
+}
+
+/* --- Dashboard Panel --- */
+#dashboard {
+    border: 1px solid var(--border-light);
+    padding: 25px 30px;
+    background-color: var(--dashboard-bg);
+    backdrop-filter: blur(var(--dashboard-blur));
+    -webkit-backdrop-filter: blur(var(--dashboard-blur));
+    border-radius: 12px;
+    min-width: 340px;
+    box-shadow: 0 8px 25px var(--shadow-color-light);
+    flex: 1;
+    max-width: 480px;
+    color: var(--text-light);
+}
+
+#dashboard h2 {
+    margin-top: 0;
+    color: #ffffff;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 12px;
+    margin-bottom: 25px;
+    font-weight: 600;
+    font-size: 1.6em;
+    text-align: center;
+}
+
+/* --- Dashboard Sections --- */
+.dashboard-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-light);
+}
+.dashboard-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.dashboard-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: 600;
+    font-size: 1.2em;
+    color: #eee;
+    opacity: 0.9;
+}
+
+/* --- Status Display --- */
+#status-section p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    margin: 0; /* Reset paragraph margin */
+}
+
+#status-icon { /* Class for the icon itself */
+    margin-right: 10px;
+    font-size: 1.1em; /* Adjust icon size relative to text */
+    width: 1.2em; /* Ensure space for spinner */
+    text-align: center;
+}
+
+#status-text { /* The whole span container */
+    font-weight: bold;
+    padding: 10px 18px;
+    border-radius: 25px; /* Pill shape */
+    display: inline-flex; /* Use flex for icon alignment */
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    border: 1px solid transparent; /* Placeholder for border */
+}
+.status-active { color: #fff; background-color: var(--success-color); border-color: var(--success-border); }
+.status-inactive { color: #fff; background-color: var(--danger-color); border-color: var(--danger-border); }
+.status-connecting { color: var(--text-dark); background-color: var(--warning-color); border-color: #d39e00; }
+.status-disconnected { color: #fff; background-color: var(--disconnected-color); border-color: #5a6268; }
+
+/* --- Feedback Display --- */
+#feedback-section {
+    text-align: center;
+    min-height: 3em; /* Reserve space */
+}
+#feedback-text {
+    font-weight: 600;
+    color: #fff;
+    min-height: 1.3em;
+    padding: 10px 15px;
+    border-radius: 5px;
+    display: inline-flex; /* Align icon and text */
+    align-items: center;
+    max-width: 95%;
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.4s ease-in-out; /* Fade effect */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+#feedback-text.visible {
+    opacity: 1; /* Make visible */
+}
+#feedback-text .icon { /* Class specifically for feedback icons */
+    margin-right: 8px;
+    font-size: 1.1em;
+}
+/* Background colors based on feedback type */
+#feedback-text.feedback-action { background-color: rgba(23, 162, 184, 0.8); } /* Info blue semi-transparent */
+#feedback-text.feedback-status { background-color: rgba(50, 50, 50, 0.6); } /* Neutral dark semi-transparent */
+
+/* --- Detected Gestures --- */
+#gesture-list-container {
+     margin-top: 20px;
+}
+
+#gesture-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 150px; /* Limit height if list gets long */
+    overflow-y: auto; /* Add scrollbar if needed */
+}
+
+#gesture-list li {
+    background-color: rgba(255, 255, 255, 0.1);
+    margin-bottom: 8px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 1em;
+    color: var(--text-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+#gesture-list li:last-child {
+    margin-bottom: 0;
+}
+#gesture-list li:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+#gesture-list li span { /* Styles the gesture name */
+    font-weight: bold;
+    margin-left: 10px;
+    background-color: rgba(0,0,0,0.2);
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.95em;
+}
+
+/* --- Available Gestures Hint --- */
+#available-gestures ul {
+    list-style: none;
+    padding: 0;
+    font-size: 0.9em;
+    color: #ccc;
+    margin: 0;
+}
+#available-gestures li {
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+}
+#available-gestures li i { /* Style icons in the list */
+    margin-right: 8px;
+    color: var(--accent-color);
+    width: 1.2em; /* Align icons */
+    text-align: center;
+}
+#available-gestures code {
+    background-color: rgba(0,0,0,0.3);
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.95em;
+    margin-right: 5px;
+}
+
+/* --- Controls Section --- */
+#controls-section {
+    text-align: center;
+}
+#toggle-active-btn {
+    font-family: var(--font-family);
+    padding: 12px 25px; /* Slightly larger button */
+    font-size: 1em;
+    font-weight: 600;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #fff; /* White text */
+    min-width: 180px; /* Ensure minimum width */
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+#toggle-active-btn:hover {
+    opacity: 0.9;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+#toggle-active-btn.active-state { background-color: var(--success-color); border: 1px solid var(--success-border); }
+#toggle-active-btn.inactive-state { background-color: var(--danger-color); border: 1px solid var(--danger-border); }
+
+
+/* --- Responsiveness --- */
+@media (max-width: 1000px) {
+    #container { gap: 25px; }
+    #video-container, #dashboard { max-width: 90%; }
+}
+
+@media (max-width: 768px) {
+    body { padding: 15px; }
+    h1 { font-size: 2.2em; margin-bottom: 25px; }
+    #container { flex-direction: column; align-items: center; gap: 25px;}
+    #video-container, #dashboard { flex: none; width: 95%; max-width: 600px; }
+    #dashboard { padding: 20px; min-width: unset; }
+}
+
+@media (max-width: 480px) {
+     h1 { font-size: 1.8em; }
+     #dashboard h2 { font-size: 1.4em; }
+     #dashboard p { font-size: 1em; }
+     #toggle-active-btn { width: 80%; padding: 12px; }
+}

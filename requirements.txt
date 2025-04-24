@@ -1,0 +1,14 @@
+# requirements.txt
+Flask>=2.0
+Flask-SocketIO>=5.0
+python-engineio>=4.0
+python-socketio>=5.0
+eventlet>=0.30 # Crucial for SocketIO async mode
+opencv-python>=4.5
+mediapipe>=0.9
+numpy>=1.20
+Pillow>=9.0 # For image encoding
+pyautogui>=0.9
+playsound==1.2.2 # Specific version for compatibility
+configparser>=5.0 # Though built-in in recent Python
+gunicorn>=20.0 # Production web server
