@@ -50,29 +50,4 @@
 * **Audio (Optional):** Playsound (`.mp3`/`.wav` support depends on backend)
 * **Containerization (Optional):** Docker
 
----
 
-## 📁 Project Structure
-
-```plaintext
-Gesture-Control-Web-App/
-├── static/
-│   └── css/
-│       └── style.css       # Frontend styling
-├── templates/
-│   └── index.html          # HTML structure for the web page
-├── sounds/                 # Optional: Directory for audio cues
-│   ├── action.mp3          # Sound for successful action (or .wav)
-│   └── status.mp3          # Sound for activation/deactivation (or .wav)
-├── .dockerignore           # Files to ignore during Docker build (if using Docker)
-├── .gitignore              # Specifies intentionally untracked files for Git
-├── app.py                  # Main Flask application, SocketIO, core logic
-├── camera.py               # Camera access module
-├── config.ini              # Configuration file
-├── Dockerfile              # Instructions to build Docker image (if using Docker)
-├── gesture.py              # Hand landmark detection & gesture interpretation
-├── main.py                 # (Potentially another script - purpose unclear from context)
-├── README.md               # This file
-├── requirements.txt        # Python dependencies
-├── test_install.py         # (Potentially a test script - purpose unclear from context)
-└── .venv/                  # (Should be in .gitignore - Local virtual environment)
